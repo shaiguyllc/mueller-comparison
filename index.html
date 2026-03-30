@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mueller Mechanical — Before & After</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --steel: #2a6496;
+      --steel-light: #4a90c4;
+      --gold: #f5b731;
+      --bg: #141a1f;
+      --bg2: #1c252e;
+      --bg3: #0d1117;
+      --chalk: #e8edf2;
+      --muted: #5a7080;
+      --border: rgba(74,144,196,0.2);
+      --red: #e84040;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--chalk);
+      font-family: 'Barlow', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ── SLIDES ── */
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.7s ease;
+      padding: 48px 60px;
+    }
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── PROGRESS ── */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--steel), var(--gold));
+      transition: width 0.4s ease;
+      z-index: 100;
+    }
+
+    /* ── NAV DOTS ── */
+    .dots {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--muted);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .dot.active { background: var(--gold); transform: scale(1.4); }
+
+    /* ── ARROWS ── */
+    .arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(42,100,150,0.15);
+      border: 1px solid var(--border);
+      color: var(--chalk);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 100;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+    .arrow:hover { background: var(--steel); border-color: var(--steel); }
+    .arrow.left { left: 20px; }
+    .arrow.right { right: 20px; }
+
+    /* ── LABEL PILL ── */
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(42,100,150,0.2);
+      border: 1px solid var(--border);
+      color: var(--steel-light);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+    }
+    .label.gold {
+      background: rgba(245,183,49,0.1);
+      border-color: rgba(245,183,49,0.3);
+      color: var(--gold);
+    }
+
+    /* ── HEADINGS ── */
+    .headline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(44px, 6vw, 78px);
+      line-height: 0.92;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+      color: var(--chalk);
+      margin-bottom: 20px;
+    }
+    .headline .blue { color: var(--steel-light); }
+    .headline .gold { color: var(--gold); }
+    .headline .strike {
+      position: relative;
+      color: var(--muted);
+    }
+    .headline .strike::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      top: 50%;
+      height: 4px;
+      background: var(--red);
+      transform: rotate(-2deg);
+    }
+
+    .sub {
+      font-size: 16px;
+      color: rgba(232,237,242,0.7);
+      line-height: 1.7;
+      max-width: 560px;
+    }
+
+    /* ── BEFORE/AFTER CARDS ── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+      margin-top: 32px;
+    }
+    .compare-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .compare-card.after {
+      border-color: rgba(245,183,49,0.3);
+      box-shadow: 0 0 30px rgba(42,100,150,0.15);
+    }
+    .card-header {
+      padding: 10px 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-header.before-h {
+      background: rgba(232,64,64,0.12);
+      border-bottom: 1px solid rgba(232,64,64,0.2);
+      color: #e87070;
+    }
+    .card-header.after-h {
+      background: rgba(245,183,49,0.1);
+      border-bottom: 1px solid rgba(245,183,49,0.2);
+      color: var(--gold);
+    }
+    .card-body {
+      padding: 20px;
+    }
+
+    /* ── STAT ROW ── */
+    .stat-row {
+      display: flex;
+      gap: 32px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 48px;
+      line-height: 1;
+      color: var(--gold);
+      display: block;
+    }
+    .stat-lbl {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ── BULLET LIST ── */
+    .bullet-list {
+      list-style: none;
+      margin-top: 12px;
+    }
+    .bullet-list li {
+      font-size: 14px;
+      color: rgba(232,237,242,0.75);
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.4;
+    }
+    .bullet-list li::before {
+      content: attr(data-icon);
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+    .bullet-list.good li { color: rgba(232,237,242,0.85); }
+    .bullet-list.good li::before { content: '✓'; color: #4adf90; font-weight: 700; }
+    .bullet-list.bad li::before  { content: '✗'; color: var(--red); font-weight: 700; }
+
+    /* ── QUOTE BOX ── */
+    .quote-box {
+      border-left: 3px solid var(--gold);
+      padding: 16px 20px;
+      background: rgba(245,183,49,0.06);
+      border-radius: 0 4px 4px 0;
+      margin-top: 24px;
+      font-size: 15px;
+      font-style: italic;
+      color: rgba(232,237,242,0.8);
+      line-height: 1.6;
+      max-width: 620px;
+    }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(74,223,144,0.1);
+      border: 1px solid rgba(74,223,144,0.25);
+      color: #4adf90;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 2px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--steel), var(--gold));
+      margin: 20px 0;
+    }
+
+    /* ── FEATURE GRID ── */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-top: 28px;
+      width: 100%;
+      max-width: 820px;
+    }
+    .feat {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px;
+    }
+    .feat-icon { font-size: 22px; margin-bottom: 8px; }
+    .feat-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--chalk);
+      margin-bottom: 4px;
+    }
+    .feat-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* ── MOCK BROWSER ── */
+    .browser {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      width: 100%;
+    }
+    .browser-bar {
+      background: #1e2a34;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .browser-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .browser-url {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+    .browser-body {
+      padding: 16px;
+      min-height: 140px;
+    }
+
+    /* ── MOCK SITE ELEMENTS ── */
+    .mock-hero-old {
+      background: #1a1a1a;
+      border-radius: 4px;
+      padding: 20px;
+      text-align: center;
+    }
+    .mock-hero-new {
+      background: linear-gradient(135deg, #0d2461, #1565C0);
+      border-radius: 4px;
+      padding: 20px;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .animate-1 { animation: fadeUp 0.5s ease 0.1s both; }
+    .animate-2 { animation: fadeUp 0.5s ease 0.25s both; }
+    .animate-3 { animation: fadeUp 0.5s ease 0.4s both; }
+    .animate-4 { animation: fadeUp 0.5s ease 0.55s both; }
+    .animate-5 { animation: fadeUp 0.5s ease 0.7s both; }
+
+    /* ── SLIDE-SPECIFIC ── */
+
+    /* Slide 1: Title */
+    #slide-1 {
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(42,100,150,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(245,183,49,0.08) 0%, transparent 60%),
+        var(--bg);
+      text-align: center;
+    }
+    .title-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--steel-light);
+      margin-bottom: 28px;
+      opacity: 0.8;
+    }
+    .title-wrench {
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    /* Slide 2: The Problem */
+    #slide-2 {
+      background: var(--bg);
+      flex-direction: row;
+      align-items: center;
+      gap: 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Slide 3: Before Hero */
+    #slide-3 { background: #0d1117; }
+
+    /* Slide 4: After Hero */
+    #slide-4 {
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(21,101,192,0.2) 0%, transparent 60%),
+        var(--bg3);
+    }
+
+    /* Slide 5: Trust & Credibility */
+    #slide-5 { background: var(--bg); }
+
+    /* Slide 6: Services */
+    #slide-6 { background: var(--bg3); }
+
+    /* Slide 7: Mobile */
+    #slide-7 { background: var(--bg); }
+
+    /* Slide 8: Quote Flow */
+    #slide-8 { background: var(--bg3); }
+
+    /* Slide 9: Final */
+    #slide-9 {
+      background:
+        linear-gradient(160deg, #0a1520 0%, #0d2461 50%, #141a1f 100%);
+      text-align: center;
+    }
+
+    /* ── SCORE BAR ── */
+    .score-wrap { margin: 8px 0; }
+    .score-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      letter-spacing: .5px;
+    }
+    .score-track {
+      height: 8px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .score-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+    .score-fill.bad  { background: linear-gradient(90deg, #e84040, #ff7070); }
+    .score-fill.good { background: linear-gradient(90deg, var(--steel), var(--gold)); }
+
+    /* ── CHECKLIST ── */
+    .check-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 16px;
+      width: 100%;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+    .check-item.yes {
+      border-color: rgba(74,223,144,0.2);
+      background: rgba(74,223,144,0.04);
+      color: rgba(232,237,242,0.85);
+    }
+    .check-item.no {
+      border-color: rgba(232,64,64,0.2);
+      background: rgba(232,64,64,0.04);
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: rgba(232,64,64,0.4);
+    }
+    .check-item .ci { flex-shrink:0; font-size:14px; }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="dots" id="dots"></div>
+
+<button class="arrow left" onclick="go(-1)">‹</button>
+<button class="arrow right" onclick="go(1)">›</button>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 1 — TITLE
+══════════════════════════════════════════════ -->
+<div class="slide active" id="slide-1">
+  <div class="title-logo animate-1">Mueller Mechanical LLC · Philadelphia, PA</div>
+  <span class="title-wrench animate-2">🔧</span>
+  <div class="headline animate-3" style="font-size:clamp(52px,7vw,96px);text-align:center;">
+    SAME GRIT.<br/>
+    <span class="blue">BETTER TOOLS.</span>
+  </div>
+  <div class="divider animate-4" style="margin:20px auto;"></div>
+  <div class="sub animate-4" style="text-align:center;">
+    A side-by-side look at where Mueller Mechanical's website was — and where it's going.
+    Built by a company that shows up for Philly. The website should too.
+  </div>
+  <div class="animate-5" style="margin-top:32px;display:flex;align-items:center;gap:12px;justify-content:center;">
+    <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);">
+      <span style="color:var(--red);">●</span> muellermechanical.com
+    </div>
+    <div style="color:var(--muted);font-size:18px;">→</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);">
+      <span style="color:var(--gold);">●</span> Redesigned
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 2 — THE PROBLEM
+══════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div style="flex:1;">
+    <div class="label animate-1">The Starting Point</div>
+    <div class="headline animate-2" style="font-size:clamp(38px,5vw,64px);">
+      GOOD WORK.<br/>
+      <span class="strike">QUIET WEBSITE.</span>
+    </div>
+    <div class="sub animate-3" style="margin-top:16px;">
+      Mueller Mechanical does exceptional work — A2L certified, 5-star reviews,
+      trusted by Philly neighborhoods for years. But the website wasn't saying any of that.
+    </div>
+    <div class="quote-box animate-4">
+      "The work speaks for itself — but your customers are Googling you at 9pm when the AC dies.
+      They need to see what you're made of before they call."
+    </div>
+  </div>
+  <div style="flex:1;">
+    <div class="animate-3">
+      <div style="margin-bottom:12px;">
+        <div class="score-wrap">
+          <div class="score-label"><span>First Impression</span><span>2 / 10</span></div>
+          <div class="score-track"><div class="score-fill bad" style="width:20%"></div></div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div class="score-wrap">
+          <div class="score-label"><span>Trust Signals</span><span>1 / 10</span></div>
+          <div class="score-track"><div class="score-fill bad" style="width:10%"></div></div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div class="score-wrap">
+          <div class="score-label"><span>Mobile Experience</span><span>3 / 10</span></div>
+          <div class="score-track"><div class="score-fill bad" style="width:30%"></div></div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div class="score-wrap">
+          <div class="score-label"><span>Service Clarity</span><span>2 / 10</span></div>
+          <div class="score-track"><div class="score-fill bad" style="width:20%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="score-wrap">
+          <div class="score-label"><span>Lead Generation</span><span>1 / 10</span></div>
+          <div class="score-track"><div class="score-fill bad" style="width:10%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding:14px 18px;background:rgba(232,64,64,0.06);border:1px solid rgba(232,64,64,0.15);border-radius:4px;font-size:13px;color:rgba(232,237,242,0.6);line-height:1.6;" class="animate-4">
+      A customer in emergency mode — frozen pipe, dead AC in July — lands on the site and sees nothing that tells them: <em style="color:var(--chalk);">"These guys know what they're doing. Call them."</em>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 3 — BEFORE: FIRST IMPRESSION
+══════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="label animate-1">Before — First Impression</div>
+  <div class="headline animate-2" style="font-size:clamp(36px,4.5vw,58px);text-align:center;margin-bottom:24px;">
+    WHAT CUSTOMERS SAW FIRST
+  </div>
+  <div style="width:100%;max-width:880px;" class="animate-3">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dot" style="background:#e84040;"></div>
+        <div class="browser-dot" style="background:#f5b731;"></div>
+        <div class="browser-dot" style="background:#4adf90;"></div>
+        <div class="browser-url">muellermechanical.com</div>
+      </div>
+      <div class="browser-body">
+        <div class="mock-hero-old">
+          <div style="font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">HVAC Services</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;color:#ddd;margin-bottom:8px;">Mueller Mechanical</div>
+          <div style="font-size:12px;color:#666;margin-bottom:16px;">Heating · Cooling · Plumbing</div>
+          <div style="display:flex;gap:10px;justify-content:center;">
+            <div style="background:#333;border:1px solid #444;color:#aaa;padding:8px 18px;font-size:12px;border-radius:3px;">Contact Us</div>
+            <div style="background:#222;border:1px solid #333;color:#888;padding:8px 18px;font-size:12px;border-radius:3px;">Our Services</div>
+          </div>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid #333;font-size:11px;color:#444;text-align:center;">
+            No ratings shown · No certifications · No local proof · No urgency
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;justify-content:center;" class="animate-4">
+    <div style="text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:var(--red);">7 sec</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">before users leave</div>
+    </div>
+    <div style="width:1px;background:var(--border);"></div>
+    <div style="text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:var(--red);">0</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">trust signals visible</div>
+    </div>
+    <div style="width:1px;background:var(--border);"></div>
+    <div style="text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:var(--red);">0</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Philly references</div>
+    </div>
+    <div style="width:1px;background:var(--border);"></div>
+    <div style="text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:var(--red);">None</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">quote flow</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 4 — AFTER: FIRST IMPRESSION
+══════════════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+  <div class="label gold animate-1">After — First Impression</div>
+  <div class="headline animate-2" style="font-size:clamp(36px,4.5vw,58px);text-align:center;margin-bottom:24px;">
+    WHAT THEY SEE <span class="gold">NOW</span>
+  </div>
+  <div style="width:100%;max-width:880px;" class="animate-3">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dot" style="background:#e84040;"></div>
+        <div class="browser-dot" style="background:#f5b731;"></div>
+        <div class="browser-dot" style="background:#4adf90;"></div>
+        <div class="browser-url">shaiguyllc.github.io/mueller-redesign</div>
+      </div>
+      <div class="browser-body" style="padding:0;">
+        <div class="mock-hero-new" style="padding:24px 28px;">
+          <div style="font-size:10px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">📍 Serving Philadelphia & Surrounding Areas</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1;text-transform:uppercase;margin-bottom:6px;">PHILLY'S HVAC<br/><span style="color:#f5b731;">DONE RIGHT.</span></div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-bottom:14px;">Mueller Mechanical LLC — A2L certified, locally owned, no runaround.</div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;">
+            <div style="background:#1565C0;color:#fff;padding:8px 16px;font-size:11px;font-weight:700;border-radius:4px;">🔧 Request a Quote</div>
+            <div style="border:2px solid rgba(255,255,255,0.3);color:#fff;padding:8px 16px;font-size:11px;font-weight:700;border-radius:4px;">📞 Call Us Now</div>
+          </div>
+          <div style="display:flex;gap:20px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.15);">
+            <div style="text-align:center;">
+              <div style="font-weight:900;font-size:16px;color:#fff;">5.0★</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.5);">Google Rating</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-weight:900;font-size:16px;color:#fff;">20+</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.5);">5-Star Reviews</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-weight:900;font-size:16px;color:#fff;">A2L</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.5);">Certified</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-weight:900;font-size:16px;color:#fff;">100%</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.5);">Facebook Rec.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;justify-content:center;" class="animate-4">
+    <div style="text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:#4adf90;">Instant</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">trust established</div>
+    </div>
+    <div style="width:1px;background:var(--border);"></div>
+    <div style="text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:#4adf90;">4</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">trust signals above fold</div>
+    </div>
+    <div style="width:1px;background:var(--border);"></div>
+    <div style="text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:#4adf90;">Philly</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">owned & proud</div>
+    </div>
+    <div style="width:1px;background:var(--border);"></div>
+    <div style="text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:#4adf90;">2-tap</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">quote request</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 5 — TRUST & CREDIBILITY
+══════════════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+  <div class="label animate-1">Trust & Credibility</div>
+  <div class="headline animate-2" style="font-size:clamp(36px,4.5vw,58px);text-align:center;margin-bottom:8px;">
+    EARNING TRUST <span class="blue">BEFORE</span><br/>THE FIRST CALL
+  </div>
+  <div class="compare-grid animate-3">
+    <div class="compare-card">
+      <div class="card-header before-h">✗ Before — muellermechanical.com</div>
+      <div class="card-body">
+        <ul class="bullet-list bad">
+          <li>No Google rating displayed anywhere</li>
+          <li>No certifications or license info shown</li>
+          <li>No Facebook or social proof</li>
+          <li>No photos of actual work</li>
+          <li>No mention of Philadelphia or neighborhoods served</li>
+          <li>No service guarantees or warranties</li>
+          <li>No emergency availability info</li>
+        </ul>
+      </div>
+    </div>
+    <div class="compare-card after">
+      <div class="card-header after-h">✓ After — Redesign</div>
+      <div class="card-body">
+        <ul class="bullet-list good">
+          <li>5.0★ Google rating + 20 reviews visible on hero</li>
+          <li>A2L Certified badge — front and center</li>
+          <li>100% Facebook Recommend shown in trust bar</li>
+          <li>Real job photos in masonry gallery</li>
+          <li>"Philadelphia's Own" — neighborhood pride everywhere</li>
+          <li>BBB Accredited + satisfaction guarantee</li>
+          <li>Hours & service area clearly stated</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="quote-box animate-4" style="margin-top:20px;text-align:center;border-left:none;border-top:3px solid var(--gold);padding-top:16px;">
+    People hire people they trust. Every element above is there for one reason —
+    so the customer feels safe picking up the phone.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 6 — SERVICES
+══════════════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div class="label animate-1">Services & Scope</div>
+  <div class="headline animate-2" style="font-size:clamp(36px,4.5vw,58px);text-align:center;margin-bottom:8px;">
+    SHOW THEM WHAT <span class="gold">YOU DO</span>
+  </div>
+  <div class="compare-grid animate-3" style="max-width:920px;">
+    <div class="compare-card">
+      <div class="card-header before-h">✗ Before</div>
+      <div class="card-body">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Vague categories, no detail, no action</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:3px;padding:10px 12px;font-size:13px;color:#555;">Heating & Cooling</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:3px;padding:10px 12px;font-size:13px;color:#555;">Plumbing Services</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:3px;padding:10px 12px;font-size:13px;color:#555;">Emergency Repair</div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:var(--red);opacity:0.7;">No icons · No pricing context · No next step</div>
+      </div>
+    </div>
+    <div class="compare-card after">
+      <div class="card-header after-h">✓ After — 9 Specific Services</div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">❄️<br/>AC & Heat Pump</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">🔥<br/>Heating</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">🌀<br/>Mini-Splits</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">💧<br/>Water Heaters</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">🌬️<br/>A2L Systems</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">🏢<br/>Commercial</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">💨<br/>Air Quality</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">🔧<br/>Maintenance</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:11px;color:var(--chalk);">🏗️<br/>Ductwork</div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:#4adf90;">Each links directly to a quote request →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 7 — MOBILE EXPERIENCE
+══════════════════════════════════════════════ -->
+<div class="slide" id="slide-7">
+  <div class="label animate-1">Mobile Experience</div>
+  <div class="headline animate-2" style="font-size:clamp(36px,4.5vw,58px);text-align:center;margin-bottom:8px;">
+    70% OF SEARCHES HAPPEN <span class="gold">ON A PHONE</span>
+  </div>
+  <div class="compare-grid animate-3" style="max-width:780px;margin-top:20px;">
+    <div class="compare-card">
+      <div class="card-header before-h">✗ Before — Mobile</div>
+      <div class="card-body">
+        <div style="display:flex;justify-content:center;margin-bottom:16px;">
+          <div style="width:120px;background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:9px;color:#444;margin-bottom:8px;">muellermechanical.com</div>
+            <div style="background:#222;height:60px;margin-bottom:6px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#444;">Tiny desktop layout</div>
+            <div style="font-size:7px;color:#333;line-height:1.4;">Hard to read · No tap targets · Text overflows</div>
+          </div>
+        </div>
+        <ul class="bullet-list bad" style="font-size:12px;">
+          <li>Desktop layout forced into mobile viewport</li>
+          <li>Phone number hard to find / not tappable</li>
+          <li>No mobile navigation</li>
+          <li>Images break layout</li>
+        </ul>
+      </div>
+    </div>
+    <div class="compare-card after">
+      <div class="card-header after-h">✓ After — Mobile First</div>
+      <div class="card-body">
+        <div style="display:flex;justify-content:center;margin-bottom:16px;">
+          <div style="width:120px;background:linear-gradient(135deg,#0d2461,#1565C0);border:1px solid rgba(74,144,196,0.3);border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.5);margin-bottom:6px;">📍 Serving Philly</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;color:#fff;text-transform:uppercase;margin-bottom:6px;">PHILLY'S HVAC DONE RIGHT.</div>
+            <div style="background:#1565C0;color:#fff;padding:5px;font-size:8px;border-radius:3px;margin-bottom:4px;">🔧 Get a Quote</div>
+            <div style="border:1px solid rgba(255,255,255,0.3);color:#fff;padding:5px;font-size:8px;border-radius:3px;">📞 Call Now</div>
+          </div>
+        </div>
+        <ul class="bullet-list good" style="font-size:12px;">
+          <li>Hamburger nav, full responsive layout</li>
+          <li>One-tap call button always visible</li>
+          <li>Thumb-friendly quote flow</li>
+          <li>Gallery adapts to 2-column on mobile</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 8 — QUOTE FLOW
+══════════════════════════════════════════════ -->
+<div class="slide" id="slide-8">
+  <div class="label animate-1">Lead Generation</div>
+  <div class="headline animate-2" style="font-size:clamp(36px,4.5vw,58px);text-align:center;margin-bottom:8px;">
+    FROM VISITOR TO <span class="gold">LEAD</span>
+  </div>
+  <div class="sub animate-3" style="text-align:center;margin-bottom:24px;">
+    The old site had a contact page. The new site has a guided 6-step quote tool
+    that pre-fills everything so Mueller knows exactly what the customer needs.
+  </div>
+  <div style="width:100%;max-width:840px;" class="animate-3">
+    <div style="display:flex;gap:0;align-items:stretch;">
+      <!-- Old -->
+      <div style="flex:1;background:var(--bg2);border:1px solid rgba(232,64,64,0.2);border-radius:6px 0 0 6px;padding:20px;">
+        <div style="font-size:11px;letter-spacing:2px;color:#e87070;text-transform:uppercase;margin-bottom:14px;">Before</div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:4px;padding:14px;margin-bottom:10px;">
+          <div style="font-size:12px;color:#555;margin-bottom:8px;">Name:</div>
+          <div style="height:24px;background:rgba(255,255,255,0.04);border:1px solid #333;border-radius:3px;"></div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:4px;padding:14px;margin-bottom:10px;">
+          <div style="font-size:12px;color:#555;margin-bottom:8px;">Message:</div>
+          <div style="height:50px;background:rgba(255,255,255,0.04);border:1px solid #333;border-radius:3px;"></div>
+        </div>
+        <div style="background:#333;color:#666;padding:8px;text-align:center;font-size:12px;border-radius:3px;">Submit</div>
+        <div style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center;">Generic form · No context · Easy to ignore</div>
+      </div>
+      <!-- Arrow -->
+      <div style="display:flex;align-items:center;padding:0 12px;color:var(--gold);font-size:24px;font-weight:900;">→</div>
+      <!-- New -->
+      <div style="flex:1;background:var(--bg2);border:1px solid rgba(245,183,49,0.25);border-radius:0 6px 6px 0;padding:20px;">
+        <div style="font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:14px;">After — 6-Step Quote Tool</div>
+        <div style="display:flex;gap:4px;margin-bottom:14px;">
+          <div style="flex:1;height:4px;background:var(--steel);border-radius:2px;"></div>
+          <div style="flex:1;height:4px;background:var(--steel);border-radius:2px;"></div>
+          <div style="flex:1;height:4px;background:var(--steel);border-radius:2px;"></div>
+          <div style="flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;"></div>
+          <div style="flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;"></div>
+          <div style="flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;"></div>
+        </div>
+        <div style="font-size:12px;color:var(--chalk);font-weight:600;margin-bottom:10px;">What Do You Need?</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
+          <div style="background:rgba(21,101,192,0.3);border:1px solid rgba(74,144,196,0.4);border-radius:3px;padding:8px;text-align:center;font-size:10px;color:var(--chalk);">❄️ HVAC</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:10px;color:var(--muted);">💧 Water</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:3px;padding:8px;text-align:center;font-size:10px;color:var(--muted);">💨 Air</div>
+        </div>
+        <div style="background:var(--steel);color:#fff;padding:8px;text-align:center;font-size:12px;border-radius:3px;font-weight:700;">Next →</div>
+        <div style="margin-top:12px;font-size:11px;color:#4adf90;text-align:center;">Zip check · Service type · Residential/Commercial · System · Job · Contact</div>
+      </div>
+    </div>
+  </div>
+  <div class="quote-box animate-4" style="margin-top:20px;max-width:700px;text-align:center;border-left:none;border-top:2px solid var(--steel);padding-top:14px;font-size:14px;">
+    The quote tool pre-writes the email summary — saving Mueller time and giving customers
+    a friction-free way to ask for help, even at midnight.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 9 — FINAL CTA
+══════════════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div class="animate-1" style="margin-bottom:16px;">
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <div class="badge">🔧 A2L Certified</div>
+      <div class="badge">⭐ 5.0 Google</div>
+      <div class="badge">📍 Philadelphia's Own</div>
+    </div>
+  </div>
+  <div class="headline animate-2" style="font-size:clamp(48px,6.5vw,88px);text-align:center;">
+    BUILT FOR <span class="gold">THE BLOCK.</span><br/>
+    READY FOR <span class="blue">THE CALL.</span>
+  </div>
+  <div class="divider animate-3" style="margin:20px auto;width:80px;"></div>
+  <div class="sub animate-3" style="text-align:center;max-width:580px;">
+    Mueller Mechanical has always done the work right. Now the website does too.
+    Honest labor deserves an honest digital presence — something as dependable
+    as the team behind it.
+  </div>
+  <div class="animate-4" style="margin-top:32px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <a href="https://shaiguyllc.github.io/mueller-redesign/" target="_blank"
+       style="background:var(--steel);color:#fff;padding:15px 34px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:700;text-decoration:none;border-radius:3px;">
+      View Redesign →
+    </a>
+    <a href="https://muellermechanical.com" target="_blank"
+       style="border:1px solid var(--border);color:var(--chalk);padding:15px 34px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:700;text-decoration:none;border-radius:3px;">
+      Original Site
+    </a>
+  </div>
+  <div class="animate-5" style="margin-top:28px;font-size:12px;color:var(--muted);text-align:center;letter-spacing:1px;">
+    SAME MUELLER. BETTER FIRST IMPRESSION.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let   cur    = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur = (n + total) % total;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    document.getElementById('progress').style.width =
+      ((cur + 1) / total * 100) + '%';
+  }
+
+  function go(dir) { goTo(cur + dir); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    go(-1);
+  });
+
+  // Touch swipe
+  let tx = 0;
+  document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+  document.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  });
+
+  // Init progress
+  document.getElementById('progress').style.width = (1 / total * 100) + '%';
+</script>
+</body>
+</html>
